@@ -12,11 +12,8 @@
 
         <div class="card card-dash p-3 mb-3">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-                <div>
-                    <input id="selectAll" type="checkbox" class="form-check-input me-2">
-                    <label for="selectAll" class="fw-bold">Chọn tất cả</label>
-                </div>
-                <div class="small text-muted fw-bold">Chọn sản phẩm và nhấn Thanh toán</div>
+                <div class="fw-bold">Giỏ hàng của bạn</div>
+                <div class="small text-muted fw-bold">Nhấn Thanh toán để đặt hàng</div>
             </div>
 
             <div th:if="${#lists.isEmpty(cartItems)}" class="text-center p-4 text-muted">
@@ -24,17 +21,14 @@
             </div>
 
             <div th:each="item : ${cartItems}" class="d-flex gap-3 align-items-start mb-3 p-3 border rounded shadow-sm">
+                <!-- Hidden input để gửi tất cả item IDs -->
+                <input type="hidden" name="itemIds" th:value="${item.id}">
 
-                <div class="d-flex align-items-start gap-2">
-                    <input type="checkbox" name="itemIds" th:value="${item.id}" class="form-check-input select-item mt-3">
-
-                    <div class="product-image-box d-flex justify-content-center align-items-center" style="width:100px; height:100px;">
-                        <img th:src="@{'/user/products/image/' + ${item.product.id}}"
-                             alt="Ảnh Sản Phẩm"
-                             style="max-width:100%; max-height:100%; object-fit:contain; border-radius:6px;">
-                    </div>
+                <div class="product-image-box d-flex justify-content-center align-items-center" style="width:100px; height:100px;">
+                    <img th:src="@{'/user/products/image/' + ${item.product.id}}"
+                         alt="Ảnh Sản Phẩm"
+                         style="max-width:100%; max-height:100%; object-fit:contain; border-radius:6px;">
                 </div>
-
 
                 <div class="flex-grow-1">
                     <div class="d-flex justify-content-between">
@@ -77,7 +71,6 @@
                             <div class="text-muted mt-1">Hiện tại còn: <strong th:text="${item.product.quantity}"></strong></div>
                         </div>
 
-
                         <div class="ms-auto">
                             <a th:href="@{'/cart/remove/' + ${item.id}}"
                                class="btn btn-sm btn-outline-danger">
@@ -87,21 +80,18 @@
                     </div>
                 </div>
             </div>
+
             <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-2">
                 <div class="small text-muted fw-bold">Tổng tiền giỏ hàng:</div>
-                <div>
-                    <span class="fs-6 text-muted me-3">Tổng (chưa chọn): <strong th:text="${#numbers.formatDecimal(total, 0, 'POINT', 0, 'COMMA')} + ' đ'">0 ₫</strong></span>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="fs-5 fw-bold text-danger" id="totalAmount" style="min-width: 150px; text-align: right;" th:text="${#numbers.formatDecimal(total, 0, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
 
-                    <span class="fs-5 fw-bold text-danger" id="selectedTotal">0 đ</span>
-
-                    <button type="button" class="btn btn-primary btn-sm ms-3" onclick="openCheckoutModal()">
+                    <button type="button" class="btn btn-primary btn-sm" style="white-space: nowrap;" onclick="openCheckoutModal()">
                         Thanh toán
                     </button>
                 </div>
             </div>
         </div>
-
-        <input type="hidden" name="selectedItemIds" id="selectedItemIdsInput" />
     </form>
 </div>
 
