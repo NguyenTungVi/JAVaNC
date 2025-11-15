@@ -16,19 +16,165 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        body { background-color: #E6E9EE !important; margin: 0; padding: 0; min-height: 100vh; }
-        .sidebar-widget { background-color: #ed87b3 !important; box-shadow: 0 4px 8px rgba(254, 235, 235, 0.6); transition: background-color 0.3s; }
+        body {
+            background-color: #f5f5f5 !important;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* ⭐ Shadow cho phần body content */
+        #shop-page {
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            border-radius: 8px;
+        }
+
+        .sidebar-widget {
+            background-color: #f86d73 !important;
+            box-shadow: 0 4px 8px rgba(254, 235, 235, 0.6);
+            transition: background-color 0.3s;
+        }
+
+        /* ⭐ Hover cho "Trở về Trang Shop" và "Giỏ hàng" */
+        .sidebar-menu li a {
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            padding: 8px 12px !important;
+            font-weight: 600;
+            border: 2px solid transparent;
+        }
+
+        .sidebar-menu li a:hover {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid #000000 !important;
+            transform: translateX(5px);
+            padding-left: 16px !important;
+        }
+
         /* Bổ sung CSS cho Product Card để hiển thị đúng */
-        .product-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%; position: relative; }
-        .product-image-container { height: 220px; overflow: hidden; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #eee; background-color: #f8f8f8; }
-        .product-image { max-height: 100%; max-width: 100%; object-fit: contain; padding: 10px; }
-        .product-info { padding: 15px; flex-grow: 1; }
-        .product-footer { padding: 15px; border-top: 1px solid #eee; }
-        .product-name { font-size: 1.1rem; font-weight: 600; color: #333; margin-bottom: 5px; height: 48px; overflow: hidden; }
-        .product-author { font-size: 0.85rem; color: #6c757d; margin-bottom: 5px; }
-        .price-display { margin-bottom: 10px; }
-        .price-display .original-price { font-size: 0.9rem; color: #6c757d; text-decoration: line-through; margin-right: 5px; }
-        .price-display .sale-price, .price-display .normal-price { font-size: 1.2rem; font-weight: 700; color: #dc3545; }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* ⭐ Hover cho Product Card */
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-color: #f86d73;
+        }
+
+        .product-image-container {
+            height: 220px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            background-color: #f8f8f8;
+            transition: background-color 0.3s ease;
+        }
+
+        .product-card:hover .product-image-container {
+            background-color: #fff5f5;
+        }
+
+        .product-image {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: 15px;
+            flex-grow: 1;
+        }
+
+        .product-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            height: 48px;
+            overflow: hidden;
+            transition: color 0.3s ease;
+        }
+
+        .product-card:hover .product-name {
+            color: #f86d73;
+        }
+
+        .product-author {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .price-display {
+            margin-bottom: 10px;
+        }
+
+        .price-display .original-price {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-decoration: line-through;
+            margin-right: 5px;
+        }
+
+        .price-display .sale-price,
+        .price-display .normal-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #dc3545;
+        }
+
+        /* ⭐ Animation cho tiêu đề */
+        .page-title {
+            animation: fadeInDown 0.6s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ⭐ Hover effect cho các button trong product card (nếu có) */
+        .product-card .btn {
+            transition: all 0.3s ease;
+        }
+
+        .product-card .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -41,15 +187,15 @@
 
             <div class="col-lg-3 col-md-4 mb-5">
                 <div class="sidebar-widget mb-4 border rounded-3 p-4">
-                    <h5 class="widget-title mb-3">Tác Vụ Nhanh</h5>
+                    <h5 class="widget-title mb-3 text-white fw-bold">Tác Vụ Nhanh</h5>
                     <ul class="list-unstyled sidebar-menu">
                         <li class="mb-2">
-                            <a th:href="@{/shop}" class="text-dark text-decoration-none d-block p-1">
+                            <a th:href="@{/shop}" class="text-white text-decoration-none d-block">
                                 <i class="bi bi-grid-fill me-2"></i> Trở về Trang Shop
                             </a>
                         </li>
                         <li class="mb-2">
-                            <a th:href="@{/user/profile(tab='cart')}" class="text-dark text-decoration-none d-block p-1">
+                            <a th:href="@{/user/profile(tab='cart')}" class="text-dark text-decoration-none d-block">
                                 <i class="bi bi-bag-fill me-2"></i> Giỏ hàng
                             </a>
                         </li>
@@ -57,16 +203,22 @@
                 </div>
 
                 <div class="sidebar-widget mb-5 border rounded-3 p-4">
-                    <h5 class="widget-title mb-3 text-primary fw-bold">Top Sellers</h5>
-                    <p class="text-muted small">Bạn đang xem danh sách bán chạy nhất.</p>
+                    <h5 class="widget-title mb-3 text-white fw-bold">
+                        <i class="bi bi-trophy-fill me-2"></i>Top Sellers
+                    </h5>
+                    <p class="text-white small mb-0">
+                        <i class="bi bi-info-circle me-1"></i>Bạn đang xem danh sách bán chạy nhất.
+                    </p>
                 </div>
             </div>
 
             <div class="col-lg-9 col-md-8">
 
                 <div id="product-list-area">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-primary"><i class="bi bi-trophy-fill me-2"></i> TOP 10 SÁCH BÁN CHẠY NHẤT</h3>
+                    <div class="d-flex justify-content-between align-items-center mb-4 page-title">
+                        <h3 class="text-primary mb-0">
+                            <i class="bi bi-trophy-fill me-2"></i> TOP 10 SÁCH BÁN CHẠY NHẤT
+                        </h3>
                     </div>
 
                     <div th:replace="fragments/admin-analysis-book :: analysisBookView(bestSellers=${bestSellers})"></div>
@@ -80,7 +232,6 @@
 <div th:replace="~{fragments/footer :: footer_content}"></div>
 
 <script th:src="@{/js/shop.js}"></script>
-
 
 </body>
 </html>
