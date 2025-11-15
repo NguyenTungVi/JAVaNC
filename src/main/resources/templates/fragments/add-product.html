@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<div th:fragment="addProductForm(categories)">
+    <div class="modal fade"
+         id="addProductModalActual"
+         tabindex="-1"
+         aria-labelledby="addProductModalLabel"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <form th:action="@{/admin/products/save}" method="post" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProductModalLabel"><i class="fa-solid fa-book-medical me-2"></i>Thêm Sản phẩm Mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small">Ảnh Bìa *</label>
+                                <input type="file" name="imageFile" class="form-control form-control-sm" accept="image/*" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small">Tên Sản phẩm *</label>
+                                <input type="text" name="name" class="form-control form-control-sm" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small">Tác giả *</label>
+                                <input type="text" name="author" class="form-control form-control-sm" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small">Thể loại *</label>
+                                <select name="category" class="form-select form-select-sm" required>
+                                    <option th:each="cat : ${categories}"
+                                            th:value="${cat.id}" th:text="${cat.name}">ROMANCE</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small">Số lượng *</label>
+                                <input type="number" name="quantity" class="form-control form-control-sm" value="0" min="0" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small">Giá Bán Gốc *</label>
+                                <input type="number" name="price" class="form-control form-control-sm" required min="1">
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small">Giá Giảm (Discount Price)</label>
+                                <input type="number" name="discountPrice" class="form-control form-control-sm" min="0">
+                                <small class="text-muted">Để trống nếu không giảm giá.</small>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small">Mô tả Sản phẩm</label>
+                                <textarea name="description" class="form-control form-control-sm" rows="2"></textarea>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" style="background-color: #ff8787; color: white; border: none;" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-danger" style="background-color: #6cbf6f; color: white; border: none;"><i class="fas fa-save me-1"></i>Thêm Sản phẩm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

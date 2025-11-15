@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        /* CSS tùy chỉnh bổ sung */
+        .order-card {
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            transition: box-shadow 0.3s ease;
+        }
+        .order-card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        .product-image-box img {
+            object-fit: cover !important; /* Dùng cover thay vì contain để hình ảnh trông đầy đặn hơn */
+            border: 1px solid #f0f0f0;
+        }
+        .btn-action-group a, .btn-action-group button {
+            white-space: nowrap; /* Ngăn nút bị xuống dòng */
+        }
+    </style>
+</head>
+<body>
+
+<div th:fragment="orderList(orders)">
+
+    <h2 class="mb-4 text-primary">
+        <i class="bi bi-clock-history me-2"></i> Lịch sử Đơn hàng
+    </h2>
+    <hr class="mb-4"/>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="alert alert-info text-center py-3">
+        <i class="bi bi-info-circle me-2"></i> Bạn chưa có đơn hàng nào.
+    </div>
+
+    <div th:each="order : ${orders}" class="card mb-4 order-card">
+        <div class="card-header bg-light p-3">
+            <div class="row align-items-center">
+
+                <div class="col-md-4 col-6">
+                    <div class="small text-muted">Mã ĐH: <strong class="text-dark" th:text="${order.id}">#000</strong></div>
+                    <div class="fw-bold text-nowrap">
+                        <i class="bi bi-calendar-check me-1 text-success"></i>
+                        Ngày đặt: <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2023 10:00</span>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-6 text-center">
+                    <div class="small text-muted">Tổng tiền:</div>
+                    <div class="fw-bold fs-5 text-danger"
+                         th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</div>
+                </div>
+
+                <div class="col-md-5 text-end mt-2 mt-md-0">
+                    <div class="small mb-1">
+                        Phương Thức Thanh Toán: <span class="badge bg-secondary"
+                                                      style="background-color: #20e6e6 !important; color: white; border: none;">
+                                <i class="bi bi-wallet-fill me-1"></i>
+                                <span th:text="${order.paymentMethod.toString() == 'CHUYEN_KHOAN' ? 'Chuyển khoản' : 'Khi giao hàng'}">Khi giao hàng</span>
+                              </span>
+                    </div>
+                    <span class="badge fs-6 py-2 px-3"
+                          th:classappend="${order.status.toString() == 'DA_HUY' ? 'bg-danger' :
+                                            (order.status.toString() == 'DA_GIAO' ? 'bg-success' :
+                                             (order.status.toString() == 'DA_NHAN' ? 'bg-dark' : 'bg-primary'))}">
+                        <i th:classappend="${order.status.toString() == 'CHUA_NHAN' ? 'bi-hourglass-split' :
+                                           (order.status.toString() == 'DANG_GIAO' ? 'bi-truck' :
+                                           (order.status.toString() == 'DA_GIAO' ? 'bi-check-circle' :
+                                           (order.status.toString() == 'DA_NHAN' ? 'bi-box-seam-fill' : 'bi-x-octagon')))}">
+                        </i>
+                        <span th:text="${order.status.toString() == 'CHUA_NHAN' ? 'Chờ xác nhận' :
+                                         (order.status.toString() == 'DANG_GIAO' ? 'Đang giao' :
+                                          (order.status.toString() == 'DA_GIAO' ? 'Đã giao' :
+                                           (order.status.toString() == 'DA_NHAN' ? 'Đã nhận' : 'Đã hủy')))}">Chờ xác nhận</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                <button class="btn btn-sm btn-outline-info my-1" type="button"
+                        data-bs-toggle="collapse" th:attr="data-bs-target='#detail-' + ${order.id}"
+                        aria-expanded="false" th:aria-controls="'detail-' + ${order.id}">
+                    <i class="bi bi-list-ul me-1"></i> Chi tiết Đơn hàng
+                </button>
+
+                <div class="d-flex gap-2 btn-action-group my-1">
+
+                    <a th:if="${order.status.toString() != 'DANG_GIAO' and order.status.toString() != 'DA_GIAO' and order.status.toString() != 'DA_NHAN' and order.status.toString() != 'DA_HUY'}"
+                       th:href="@{'/orders/cancel/' + ${order.id}}"
+                       onclick="return confirm('Bạn có chắc chắn muốn HỦY đơn hàng này? Thao tác này không thể hoàn tác và số lượng tồn kho sẽ được cập nhật lại.')"
+                       class="btn btn-sm btn-danger">
+                        <i class="bi bi-x-circle me-1"></i> Hủy đơn hàng
+                    </a>
+
+                    <button th:if="${order.status.toString() != 'DANG_GIAO' and order.status.toString() != 'DA_GIAO' and order.status.toString() != 'DA_NHAN' and order.status.toString() != 'DA_HUY'}"
+                            type="button"
+                            class="btn btn-sm btn-warning"
+                            th:attr="onclick=|openEditOrderModal('${order.id}')|">
+                        <i class="bi bi-pencil-square me-1"></i> Sửa đơn hàng
+                    </button>
+
+                    <a th:if="${order.status.toString() == 'DA_GIAO'}"
+                       th:href="@{'/orders/confirm-received/' + ${order.id}}"
+                       class="btn btn-sm btn-success">
+                        <i class="bi bi-bag-check me-1"></i> Đã nhận hàng
+                    </a>
+                </div>
+            </div>
+
+            <div class="collapse mt-3" th:id="'detail-' + ${order.id}">
+                <div class="card card-body bg-light border p-3">
+                    <h6 class="border-bottom pb-2 mb-3 text-secondary"
+                        style="background-color: #c72ebd !important; color: white; border: none;">
+                        <i class="bi bi-basket me-1"></i> Sản phẩm trong đơn hàng:
+                    </h6>
+
+                    <div th:each="item : ${order.items}" class="d-flex align-items-start gap-3 mb-3 pb-3 border-bottom">
+
+                        <div class="product-image-box flex-shrink-0" style="width:70px; height:70px;">
+                            <img th:src="@{'/user/products/image/' + ${item.product.id}}"
+                                 alt="Ảnh Sản Phẩm" style="width:100%; height:100%; object-fit:cover; border-radius:6px;">
+                        </div>
+
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 fw-bold small text-dark" th:text="${item.product.name}">Tên sách</h6>
+                            <div class="small text-muted">Tác giả: <span th:text="${item.product.author}"></span></div>
+                            <div class="small text-muted">Thể loại: <span th:text="${item.product.category.name}"></span></div>
+                        </div>
+
+                        <div class="text-end flex-shrink-0" style="width: 180px;">
+                            <div class="small text-dark">
+                                <i class="bi bi-box me-1"></i> Số lượng: <strong th:text="${item.quantity}">2</strong>
+                            </div>
+                            <div class="small text-muted">
+                                Giá lúc đặt: <span th:text="${#numbers.formatDecimal(item.priceAtOrderTime, 0, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
+                            </div>
+                            <div class="fw-bold text-primary mt-1">
+                                <i class="bi bi-currency-dollar me-1"></i> Thành tiền: <span th:text="${#numbers.formatDecimal(item.subtotal, 0, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
+                            </div>
+                        </div>
+
+                        <div class="ms-3 text-end flex-shrink-0" style="width: 80px;">
+                            <span class="badge"
+                                  th:classappend="${item.product.quantity > 0 ? 'bg-success' : 'bg-danger'}"
+                                  th:text="${item.product.quantity > 0 ? 'Còn hàng' : 'Hết hàng'}">Còn hàng</span>
+                        </div>
+                    </div>
+
+                    <div class="text-end fw-bold mt-2 pt-2 border-top">
+                        Tổng cộng: <span class="text-danger fs-5" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'POINT', 0, 'COMMA')} + ' đ'">0 đ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

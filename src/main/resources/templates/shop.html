@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookly - Shop Page</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin-product-list.css}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-y3qzM..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #E6E9EE !important;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .sidebar-widget {
+            background-color: #ed87b3 !important;
+            box-shadow: 0 4px 8px rgba(254, 235, 235, 0.6);
+            transition: background-color 0.3s;
+        }
+    </style>
+
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header_content}"></div>
+
+<section id="shop-page" class="padding-large pt-5">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-3 col-md-4 mb-5">
+                <div class="sidebar-widget mb-4 border rounded-3 p-4">
+                    <h5 class="widget-title mb-3">Tác Vụ Nhanh</h5>
+                    <ul class="list-unstyled sidebar-menu">
+                        <li class="mb-2">
+                            <a th:href="@{/shop(keyword=${keyword})}"
+                               th:classappend="${categoryName == null || categoryName == ''} ? 'fw-bold text-primary' : 'text-dark'"
+                               class="text-decoration-none d-block p-1">
+                                <i class="bi bi-grid-fill me-2"></i> Hiển thị tất cả
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a th:href="@{/user/profile(tab='cart')}" class="text-dark text-decoration-none d-block p-1">
+                                <i class="bi bi-bag-fill me-2"></i> Giỏ hàng
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-widget mb-5 border rounded-3 p-4">
+                    <h5 class="widget-title mb-3">Danh Mục Thể Loại</h5>
+                    <ul class="list-unstyled sidebar-menu">
+                        <li th:each="cat : ${allCategories}" class="mb-2">
+                            <a th:href="@{/shop(category=${cat.name}, keyword=${keyword})}"
+                               th:classappend="${categoryName != null and categoryName == cat.name} ? 'fw-bold text-primary' : 'text-dark'"
+                               class="text-decoration-none d-flex justify-content-between align-items-center p-1">
+                                <i class="bi bi-book-fill me-2"></i>
+                                <span th:text="${cat.name}">Tên Thể Loại</span>
+                            </a>
+                        </li>
+
+                        <li th:if="${#lists.isEmpty(allCategories)}">
+                            <p class="text-muted fst-italic p-1">Chưa có thể loại nào.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-9 col-md-8">
+
+                <div class="search-filter-bar mb-4 p-4 border rounded-3 bg-light">
+                    <h4 class="mb-3">Tìm Kiếm & Lọc Sản Phẩm</h4>
+                    <form th:action="@{/shop}" method="get" class="row g-3 align-items-center">
+
+                        <div class="col-md-5">
+                            <input type="text" name="keyword"
+                                   th:value="${keyword}"
+                                   class="form-control"
+                                   placeholder="Tìm theo tên sách, tác giả...">
+                        </div>
+
+                        <div class="col-md-4">
+                            <select name="category" class="form-select">
+                                <option value="" th:selected="${categoryName == null || categoryName == ''}">-- Tất cả Thể loại --</option>
+                                <option th:each="cat : ${allCategories}"
+                                        th:value="${cat.name}"
+                                        th:text="${cat.name}"
+                                        th:selected="${categoryName != null and categoryName == cat.name}">
+                                    Thể loại
+                                </option>
+                            </select>
+                        </div>
+
+                        <input type="hidden" name="page" value="0" />
+                        <input type="hidden" name="size" th:value="${products.size}" />
+
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit"
+                                    class="btn btn-primary w-100"
+                                    style="background-color: #ed87b3; color: white; border: none;">
+                                <i class="fa-solid fa-search me-1"></i> Tìm kiếm
+                            </button>
+                            <a th:href="@{/shop}"
+                               class="btn btn-outline-secondary"
+                               style="background-color: #ed87b3; color: white; border: none;">
+                                Reset tìm kiếm
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="product-list-area">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 th:text="${products != null} ? 'Kết quả tìm kiếm (' + ${products.totalElements} + ' sản phẩm)' : 'Danh sách Sản phẩm'">Danh sách Sản phẩm</h3>
+                    </div>
+
+                    <div th:replace="fragments/product :: customerProductList(${products})"></div>
+
+                    <nav aria-label="Page navigation" th:if="${products != null and products.totalPages > 1}" class="mt-5">
+                        <ul class="pagination justify-content-center flex-wrap">
+
+                            <li th:class="${products.number == 0} ? 'page-item disabled' : 'page-item'">
+                                <a th:unless="${products.number == 0}"
+                                   class="page-link"
+                                   th:href="@{/shop(page=${products.number - 1}, category=${categoryName}, keyword=${keyword})}">Trước</a>
+                                <span th:if="${products.number == 0}" class="page-link">Trước</span>
+                            </li>
+
+                            <li th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
+                                th:class="${i == products.number} ? 'page-item active' : 'page-item'">
+                                <a th:if="${i != products.number}"
+                                   class="page-link"
+                                   th:href="@{/shop(page=${i}, category=${categoryName}, keyword=${keyword})}"
+                                   th:text="${i + 1}">1</a>
+                                <span th:if="${i == products.number}" class="page-link" th:text="${i + 1}">1</span>
+                            </li>
+
+                            <li th:class="${products.number == products.totalPages - 1} ? 'page-item disabled' : 'page-item'">
+                                <a th:unless="${products.number == products.totalPages - 1}"
+                                   class="page-link"
+                                   th:href="@{/shop(page=${products.number + 1}, category=${categoryName}, keyword=${keyword})}">Sau</a>
+                                <span th:if="${products.number == products.totalPages - 1}" class="page-link">Sau</span>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer_content}"></div>
+
+<script th:src="@{/js/shop.js}"></script>
+
+</body>
+</html>

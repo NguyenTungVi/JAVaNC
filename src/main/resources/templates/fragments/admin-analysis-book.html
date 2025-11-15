@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+
+<div th:fragment="analysisBookView(bestSellers)">
+
+    <div class="row g-3">
+
+        <div class="col-lg-3 col-md-4 col-sm-6" th:each="item, itemStat : ${bestSellers}">
+
+            <div class="product-card best-seller-card h-100 shadow-sm">
+
+                <th:block th:with="p=${item.product}">
+
+                    <div class="product-image-container position-relative">
+                        <img th:src="@{'/user/products/image/' + ${p.id}}"
+                             alt="Ảnh Sản Phẩm"
+                             class="product-image"/>
+
+                        <span class="badge position-absolute top-0 end-0 rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                              style="font-size: 1.2em; width: 40px; height: 40px; background-color: #F86D72; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.4); z-index: 10; transform: translate(25%, -25%);">
+                            <span th:text="${itemStat.index + 1}">1</span>
+                            <span class="visually-hidden">TOP</span>
+                        </span>
+                    </div>
+
+                    <div class="product-info">
+                        <h5 class="product-name" th:text="${p.name}"></h5>
+
+                        <p class="product-author" th:text="'Tác giả: ' + ${p.author}"></p>
+                        <p class="product-category mb-2">
+                            <strong th:text="'Thể loại: ' + ${p.category.name}"></strong>
+                        </p>
+
+                        <p class="fw-bold text-primary mb-2">
+                            <i class="bi bi-cart-check"></i> Đã bán: <span th:text="${item.salesCount}">0</span> cuốn
+                        </p>
+
+                        <div class="product-quantity-status mb-3">
+                            <span class="badge"
+                                  th:classappend="${p.quantity > 0 ? 'bg-success' : 'bg-danger'}"
+                                  th:text="${p.quantity > 0 ? ('SL: ' + p.quantity) : 'Hết hàng'}"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="product-footer">
+
+                        <div class="price-display mb-3">
+                            <span th:if="${p.discountPrice != null and p.discountPrice > 0}"
+                                  class="original-price"
+                                  th:text="${#numbers.formatDecimal(p.price, 0, 'POINT', 0, 'COMMA')} + ' đ'"></span>
+                            <span th:classappend="${p.discountPrice != null and p.discountPrice > 0} ? 'sale-price' : 'normal-price'"
+                                  th:text="${#numbers.formatDecimal(p.getFinalPrice(), 0, 'POINT', 0, 'COMMA')} + ' đ'"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between gap-2">
+
+                            <div class="w-50">
+                                <button
+                                        th:if="${p.quantity > 0}"
+                                        type="button"
+                                        class="btn w-100 btn-sm add-to-cart-ajax"
+                                        th:data-product-id="${p.id}"
+                                        th:data-current-qty="1"
+                                        style="background-color: #6cbf6f; color: white; border: none;">
+                                    <i class="bi bi-cart-plus"></i>
+                                    Giỏ hàng
+                                </button>
+                                <button
+                                        th:unless="${p.quantity > 0}"
+                                        type="button"
+                                        class="btn w-100 btn-sm btn-outline-secondary disabled"
+                                        style="border: none;">
+                                    <i class="bi bi-cart-plus"></i>
+                                    Giỏ hàng
+                                </button>
+                            </div>
+
+                            <div class="w-50">
+                                <a th:href="@{'/products/detail/' + ${p.id}}"
+                                   class="btn btn-outline-dark w-100 btn-sm"
+                                   style="background-color: #d9a557; color: white; border: none;">
+                                    <i class="bi bi-eye"></i>
+                                    Chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+
+        <div class="col-12 text-muted text-center p-4" th:if="${#lists.isEmpty(bestSellers)}">
+            Chưa có dữ liệu sản phẩm bán chạy.
+        </div>
+    </div>
+</div>
+</body>
+</html>

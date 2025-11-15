@@ -1,0 +1,101 @@
+/* =========================================================
+   Signin & Signup Pages
+   Dựa theo style.css (Bookly Theme)
+   ========================================================= */
+
+/* Cấu trúc chung */
+body {
+  background-color: var(--gray-color);
+  font-family: var(--body-font);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.auth-container {
+  background: var(--white-color);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  width: 420px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  animation: slide 0.5s ease-out;
+}
+
+.auth-container h2 {
+  font-family: var(--heading-font);
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
+  color: var(--black-color);
+}
+
+.auth-container p {
+  color: var(--accent-color);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+/* Form */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.auth-form input {
+  border: 1px solid var(--gray-color-300);
+  border-radius: 50px;
+  padding: 0.9rem 1.2rem;
+  font-size: 1rem;
+  background-color: var(--gray-color);
+  transition: all 0.3s ease;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: var(--white-color);
+  box-shadow: 0 0 0 3px rgba(248, 109, 114, 0.2);
+}
+
+/* Button */
+.auth-btn {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  border: none;
+  border-radius: 50px;
+  padding: 0.9rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.05em;
+}
+
+.auth-btn:hover {
+  background-color: var(--black-color);
+  color: var(--white-color);
+}
+
+/* Link */
+.auth-link {
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.auth-link a {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.auth-link a:hover {
+  color: var(--black-color);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .auth-container {
+    width: 90%;
+    padding: 2rem 1.5rem;
+  }
+}

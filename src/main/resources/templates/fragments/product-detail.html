@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="'Chi Tiết: ' + ${product.name}"></title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin-product-list.css}">
+
+    <style>
+        /* Tùy chỉnh CSS từ fragment cũ */
+        .product-detail-info h2 { font-size: 1.8rem; }
+        .product-detail-info h5 { font-size: 1.2rem; }
+        .text-line-through {
+            text-decoration: line-through;
+        }
+
+        /* Căn giữa và định dạng container ảnh */
+        .image-container {
+            width: 100%;
+            max-height: 450px;
+            padding: 1rem !important;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            aspect-ratio: 1 / 1;
+        }
+
+        .product-detail-image {
+            max-width: 100%;
+            max-height: 100%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        /* CSS cho Tác giả và Thể loại */
+        .product-detail-info .text-muted {
+            font-weight: 600;
+            color: #495057 !important;
+        }
+
+        .product-detail-info strong {
+            font-weight: 700 !important;
+            font-size: 1.05em;
+            color: #343a40 !important;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header_content}"></div>
+
+<section id="product-detail-section" class="py-5 padding-large">
+    <div class="container">
+
+        <div class="row g-5">
+
+            <div class="col-md-5 text-center">
+                <div class="image-container p-3 rounded-3 bg-light">
+                    <img th:src="@{'/user/products/image/' + ${product.id}}"
+                         alt="Ảnh Sản Phẩm"
+                         class="product-detail-image"/>
+                </div>
+            </div>
+
+            <div class="col-md-7 product-detail-info">
+
+                <h2 class="fw-bold mb-3" th:text="${product.name}"></h2>
+
+                <h5 class="text-muted mb-3" th:text="'Tác giả: ' + ${product.author}"></h5>
+                <p class="mb-2">
+                    <span class="badge bg-secondary me-2">Thể loại:</span>
+                    <strong th:text="${product.category.name}"></strong>
+                </p>
+
+                <div class="mb-4">
+                    <h5 class="mt-3 border-bottom pb-1">Mô tả</h5>
+                    <p th:text="${product.description}"></p>
+                </div>
+
+                <div class="d-flex align-items-baseline mb-4">
+                    <h4 class="me-3 mb-0">Giá:</h4>
+
+                    <span th:if="${product.discountPrice != null and product.discountPrice > 0}"
+                          class="original-price text-line-through text-muted me-3"
+                          th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+
+                    <span th:classappend="${product.discountPrice != null and product.discountPrice > 0} ? 'text-danger' : 'text-primary'"
+                          class="sale-price fw-bolder fs-4"
+                          th:text="${#numbers.formatDecimal(product.getFinalPrice(), 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                </div>
+
+                <div class="mb-4">
+                    <p class="fw-bold mb-1">Tình trạng:</p>
+                    <span class="badge fs-6"
+                          th:classappend="${product.quantity > 0 ? 'bg-success' : 'bg-danger'}"
+                          th:text="${product.quantity > 0 ? ('Còn hàng (SL: ' + product.quantity + ')') : 'Hết hàng'}"></span>
+                </div>
+
+                <div class="d-grid gap-2 col-lg-6 col-md-12">
+
+                    <button type="button"
+                            th:data-product-id="${product.id}"
+                            th:disabled="${product.quantity <= 0}"
+                            th:classappend="${product.quantity > 0 ? 'btn-success' : 'btn-secondary disabled'}"
+                            class="btn btn-lg js-add-to-cart-detail"
+                            style="background-color: #6cbf6f; color: white; border: none;"
+                            onclick="addToCartAjax(this.getAttribute('data-product-id'))">
+                        <i class="bi bi-cart-plus me-2"></i>
+                        Thêm vào giỏ hàng
+                    </button>
+
+                    <a th:href="@{/shop}" class="btn btn-outline-dark"
+                       style="background-color: #d9a557; color: white; border: none;">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Quay lại Shop
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<div th:replace="~{fragments/footer :: footer_content}"></div>
+
+<script th:src="@{/js/shop.js}"></script>
+
+
+<script>
+    /**
+     * Hàm AJAX để thêm sản phẩm vào giỏ hàng và xử lý phản hồi JSON.
+     * Hàm này khắc phục lỗi trang hiển thị JSON khi thêm vào giỏ hàng.
+     */
+    function addToCartAjax(productId) {
+        if (!productId) return;
+
+        // Sử dụng JQuery AJAX (vì bạn đã include JQuery)
+        $.ajax({
+            url: '/cart/add/' + productId + '?qty=1',
+            type: 'GET', // Hoặc POST, tùy theo Controller Java của bạn
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Cập nhật số lượng giỏ hàng trên Header (nếu cần)
+                    const cartCountElement = document.getElementById('cart-item-count');
+                    if (cartCountElement) {
+                        cartCountElement.textContent = '(' + response.cartCount + ')';
+                    }
+
+                    // Hiển thị thông báo thành công và Tải lại trang để cập nhật SL tồn kho
+                    alert(response.message);
+                    window.location.reload();
+
+                } else {
+                    alert('Lỗi: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Lỗi kết nối hoặc lỗi server khi thêm vào giỏ hàng.');
+            }
+        });
+    }
+
+    // Nếu JQuery không được load trong footer, bạn cần thêm tag:
+    // <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</script>
+
+</body>
+</html>

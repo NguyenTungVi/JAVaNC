@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="editOrderForm">
+    <div class="modal fade" id="editOrderModal" tabindex="-1" aria-labelledby="editOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0">
+                <form th:action="@{/orders/save-edit/{id}(id=${order.id})}" method="post">
+                    <div class="modal-header bg-light border-bottom">
+                        <h5 class="modal-title fw-bold text-dark" id="editOrderModalLabel">
+                            <i class="bi bi-pencil-square me-2 text-warning"></i> Sửa Đơn hàng #<span th:text="${order.id}"></span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body p-4">
+
+                        <div class="mb-4">
+                            <label for="paymentMethod" class="form-label fw-bold"><i class="bi bi-wallet me-1"></i> Phương thức Thanh toán</label>
+                            <select id="paymentMethod" name="paymentMethod" class="form-select">
+                                <option value="KHI_GIAO_HANG" th:selected="${order.paymentMethod.toString() == 'KHI_GIAO_HANG'}">Thanh toán khi giao hàng (COD)</option>
+                                <option value="CHUYEN_KHOAN" th:selected="${order.paymentMethod.toString() == 'CHUYEN_KHOAN'}">Chuyển khoản</option>
+                            </select>
+                        </div>
+
+                        <h6><i class="bi bi-box-seam me-1"></i> Sản phẩm Trong Đơn hàng:</h6>
+
+                        <div id="orderItemsList">
+                            <div th:each="item, stat : ${order.items}" class="d-flex align-items-center gap-3 mb-3 p-3 border rounded product-item-row bg-white">
+                                <input type="hidden" name="productIds" th:value="${item.product.id}">
+
+                                <div class="product-image-box flex-shrink-0" style="width: 70px; height: 70px;">
+                                    <img th:src="@{'/user/products/image/' + ${item.product.id}}"
+                                         alt="Ảnh Sản Phẩm" style="width:100%; height:100%; object-fit:cover; border-radius:6px;">
+                                </div>
+
+                                <div class="flex-grow-1">
+                                    <strong th:text="${item.product.name}" class="d-block text-truncate">Tên sách</strong>
+                                    <div class="small text-muted">Tác giả: <span th:text="${item.product.author}"></span></div>
+                                    <div class="small text-dark">Giá: <span class="fw-bold" th:text="${#numbers.formatDecimal(item.priceAtOrderTime, 0, 'POINT', 0, 'COMMA')} + ' đ'"></span></div>
+                                    <div class="small text-danger">Tồn kho hiện tại: <strong th:text="${item.product.quantity}">0</strong></div>
+                                </div>
+
+                                <div class="input-group input-group-sm flex-shrink-0" style="width:120px;" th:attr="data-max-qty=${item.product.quantity}">
+                                    <button type="button" class="btn btn-outline-primary" onclick="updateEditQty(this, -1)">-</button>
+                                    <input type="number"
+                                           name="quantities"
+                                           th:value="${item.quantity}"
+                                           min="1"
+                                           th:max="${item.product.quantity}"
+                                           class="form-control text-center edit-qty-input"/>
+                                    <button type="button" class="btn btn-outline-primary" onclick="updateEditQty(this, 1)">+</button>
+                                </div>
+
+                                <div class="input-group input-group-sm flex-shrink-0" style="width:120px;" th:attr="data-max-qty=${item.product.quantity}">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger flex-shrink-0"
+                                            onclick="removeOrderItem(this)">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info small mt-3 p-2 border-0" style="background-color: #e0f7fa;">
+                            <i class="bi bi-lightbulb me-1"></i> Để thêm/thay đổi sản phẩm khác, bạn cần hủy đơn hàng và tạo lại từ giỏ hàng.
+                            <br>Hệ thống chỉ cho phép thay đổi số lượng và phương thức thanh toán.
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer justify-content-between border-top">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i> Đóng
+                        </button>
+                        <button type="submit" class="btn btn-primary" onclick="return validateEditForm()">
+                            <i class="bi bi-save me-1"></i> Lưu Thay Đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

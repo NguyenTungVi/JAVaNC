@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        .order-row-detail {
+            background-color: #f8f9fa; /* Light background for details */
+            border-top: 1px solid #eee;
+        }
+        .order-product-item {
+            border-bottom: 1px dashed #ddd;
+        }
+        .order-product-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+<div th:fragment="adminOrderList(allOrders)">
+
+    <h2 class="mb-3 text-primary"><i class="bi bi-truck-flatbed me-2"></i> Quản Lý Đơn Hàng</h2>
+    <hr/>
+
+    <div th:if="${#lists.isEmpty(allOrders)}" class="alert alert-info text-center mt-3">
+        Không có đơn hàng nào trong hệ thống.
+    </div>
+
+    <div class="card card-dash p-3 mb-4" th:if="${!#lists.isEmpty(allOrders)}">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th style="width: 5%">Mã ĐH</th>
+                <th style="width: 15%">User</th>
+                <th style="width: 12%">Ngày</th>
+                <th style="width: 15%">Tổng</th>
+                <th style="width: 10%">PTTT</th>
+                <th style="width: 25%">Trạng thái</th>
+                <th style="width: 10%">Hành động</th>
+                <th style="width: 8%">Chi tiết</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="order : ${allOrders}">
+                <tr th:id="'order-main-' + ${order.id}">
+                    <td th:text="${order.id}"></td>
+                    <td th:text="${order.user.firstName + ' ' + order.user.lastName}">User Name</td>
+                    <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}"></td>
+                    <td class="fw-bold text-danger" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
+                    <td th:text="${order.paymentMethod.toString() == 'CHUYEN_KHOAN' ? 'CK' : 'COD'}">COD</td>
+
+                    <td th:id="'status-cell-' + ${order.id}">
+                        <div class="d-flex gap-2 status-control" th:attr="data-order-id=${order.id}">
+
+                            <select th:id="'select-status-' + ${order.id}" name="status" class="form-select form-select-sm" style="min-width: 120px;">
+                                <option th:each="status : ${T(com.websach.banhang.model.OrderStatus).values()}"
+                                        th:value="${status}"
+                                        th:selected="${order.status == status}"
+                                        th:text="${status.toString() == 'CHUA_NHAN' ? 'Chờ XN' :
+                                                      (status.toString() == 'DANG_GIAO' ? 'Đang Giao' :
+                                                      (status.toString() == 'DA_GIAO' ? 'Đã Giao' :
+                                                      (status.toString() == 'DA_NHAN' ? 'Đã Nhận' : 'Đã Hủy')))}">CHUA_NHAN</option>
+                            </select>
+
+                            <button class="btn btn-sm btn-primary btn-set-status"
+                                    type="button"
+                                    onclick="updateOrderStatusAjax(this)">
+                                Thay đổi
+                            </button>
+                        </div>
+                    </td>
+
+                    <td>
+                        <a th:if="${order.status.toString() != 'DA_HUY'}"
+                           th:href="@{'/orders/admin-cancel/' + ${order.id}}"
+                           onclick="return confirm('ADMIN: Bạn có chắc chắn muốn HỦY đơn hàng này? Tồn kho sẽ được hoàn lại.')"
+                           class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-x-octagon"></i> Hủy
+                        </a>
+                    </td>
+
+                    <td>
+                        <button class="btn btn-sm btn-outline-info" type="button"
+                                data-bs-toggle="collapse" th:attr="data-bs-target='#detail-' + ${order.id}"
+                                aria-expanded="false" th:aria-controls="'detail-' + ${order.id}">
+                            <i class="bi bi-list-ul"></i>
+                        </button>
+                    </td>
+                </tr>
+
+                <tr class="collapse" th:id="'detail-' + ${order.id}">
+                    <td colspan="8" class="order-row-detail p-3">
+                        <h6><i class="bi bi-tag me-1"></i> Chi tiết Sản phẩm:</h6>
+                        <div th:each="item : ${order.items}" class="d-flex align-items-start gap-3 py-2 order-product-item">
+
+                            <div class="flex-shrink-0" style="width:50px; height:50px;">
+                                <img th:src="@{'/user/products/image/' + ${item.product.id}}"
+                                     alt="Ảnh SP" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">
+                            </div>
+
+                            <div class="flex-grow-1">
+                                <strong th:text="${item.product.name}" class="d-block small">Tên sách</strong>
+                                <span class="small text-muted">Tác giả: <span th:text="${item.product.author}"></span></span> |
+                                <span class="small text-muted">TL: <span th:text="${item.product.category.name}"></span></span>
+                            </div>
+
+                            <div class="text-end flex-shrink-0" style="width: 250px;">
+                                <span class="small text-dark me-3">SL: <strong th:text="${item.quantity}">2</strong></span>
+                                <span class="small text-muted">Giá: <span th:text="${#numbers.formatDecimal(item.priceAtOrderTime, 0, 'POINT', 0, 'COMMA')} + ' đ'"></span></span>
+                                <div class="fw-bold text-success small">T.Tiền: <span th:text="${#numbers.formatDecimal(item.subtotal, 0, 'POINT', 0, 'COMMA')} + ' đ'"></span></div>
+                            </div>
+
+                            <div class="text-end flex-shrink-0" style="width: 80px;">
+                                    <span class="badge"
+                                          th:classappend="${item.product.quantity > 0 ? 'bg-success' : 'bg-danger'}"
+                                          th:text="${item.product.quantity > 0 ? 'Còn' : 'Hết'}">Còn</span>
+                            </div>
+                        </div>
+
+                        <div class="text-end pt-2 mt-2 border-top">
+                            <strong class="text-dark">Tổng tiền đơn hàng: </strong>
+                            <span class="fw-bold fs-6 text-danger" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'POINT', 0, 'COMMA')} + ' đ'"></span>
+                        </div>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

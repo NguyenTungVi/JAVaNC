@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin-product-list.css}">
+</head>
+<body>
+<div th:fragment="productList(allProducts)">
+    <h3 class="mb-3 text-center">Danh Sách Sản Phẩm</h3>
+
+    <div class="row g-4">
+        <div class="col-sm-6 col-md-4 col-lg-3" th:each="p : ${allProducts}">
+            <div class="product-card">
+
+                <div class="product-image-container">
+                    <img th:src="@{'/admin/products/image/' + ${p.id}}"
+                         alt="Ảnh Sản Phẩm"
+                         class="product-image"/>
+                </div>
+
+                <div class="product-info">
+                    <h5 class="product-name" th:text="${p.name}"></h5>
+                    <p class="product-author" th:text="'Tác giả: ' + ${p.author}"></p>
+                    <p class="product-category">
+                        <strong th:text="'Thể loại: ' + ${p.category.name}"></strong>
+                    </p>
+
+                    <p class="product-description"
+                       th:text="${#strings.substring(p.description, 0, #strings.length(p.description) > 50 ? 50 : #strings.length(p.description))} + '...'"></p>
+                </div>
+
+                <div class="product-footer">
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="product-quantity-status">
+                            <span class="badge"
+                                  th:classappend="${p.quantity > 0 ? 'bg-success' : 'bg-danger'}"
+                                  th:text="${p.quantity > 0 ? ('SL: ' + p.quantity) : 'Hết hàng'}"></span>
+                        </div>
+
+                        <div class="price-display">
+                            <span th:if="${p.discountPrice != null and p.discountPrice > 0}"
+                                  class="original-price"
+                                  th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+
+                            <span th:classappend="${p.discountPrice != null and p.discountPrice > 0} ? 'sale-price' : 'normal-price'"
+                                  th:text="${#numbers.formatDecimal(p.getFinalPrice(), 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <a th:href="@{'/admin/products/edit/' + ${p.id}}" class="btn btn-sm btn-outline-primary me-2"
+                           style="background-color: #6cbf6f; color: white; border: none;">
+                            <i class="bi bi-pencil-square"></i>
+                            Sửa
+                        </a>
+                        <a th:href="@{'/admin/products/delete/' + ${p.id}}" class="btn btn-sm btn-outline-danger"
+                           style="background-color: #ff8787; color: white; border: none;">
+                            <i class="bi bi-trash"></i>
+                            Xóa
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-12 text-muted mt-5" th:if="${#lists.isEmpty(allProducts)}">
+            Chưa có sản phẩm nào được thêm.
+        </div>
+    </div>
+</div>
+</body>
+</html>
