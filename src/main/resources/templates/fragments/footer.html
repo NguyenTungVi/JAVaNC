@@ -10,8 +10,8 @@
                         <div class="col-lg-3 col-sm-6 pb-3">
                             <div class="footer-menu">
                                 <img th:src="@{/images/main-logo.png}" alt="logo" class="img-fluid mb-2">
-                                <p>Bookly was created with the mission of bringing knowledge closer to everyone.
-                                    We believe that every book is a journey, and you only need to choose where to begin.</p>
+                                <p>Bookly được tạo ra với sứ mệnh đưa tri thức đến gần hơn với mọi người.
+                                    Chúng tôi tin rằng mỗi cuốn sách là một hành trình, và bạn chỉ cần chọn nơi mà mình muốn bắt đầu..</p>
                                 <div class="social-links">
                                     <ul class="d-flex list-unstyled">
                                         <li>
@@ -55,54 +55,29 @@
                         </div>
                         <div class="col-lg-2 col-sm-6 pb-3">
                             <div class="footer-menu text-capitalize">
-                                <h5 class="widget-title pb-2">Quick Links</h5>
+                                <h5 class="widget-title pb-2">Di chuyển tới:</h5>
                                 <ul class="menu-list list-unstyled text-capitalize">
                                     <li class="menu-item mb-1">
-                                        <a href="#">Home</a>
+                                        <a class="nav-link me-4 active" th:href="@{/home}">Trang chủ</a>
                                     </li>
                                     <li class="menu-item mb-1">
-                                        <a href="#">About</a>
+                                        <a class="nav-link me-4" th:href="@{/shop}">Sách</a>
                                     </li>
                                     <li class="menu-item mb-1">
-                                        <a href="#">Shop</a>
-                                    </li>
-                                    <li class="menu-item mb-1">
-                                        <a href="#">Categories</a>
-                                    </li>
-                                    <li class="menu-item mb-1">
-                                        <a href="#">Contact</a>
+                                        <a class="nav-link me-4" th:href="@{/best-sellers}">Sản phẩm bán chạy</a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 pb-3">
-                            <div class="footer-menu text-capitalize">
-                                <h5 class="widget-title pb-2">Help & Info Help</h5>
-                                <ul class="menu-list list-unstyled">
-                                    <li class="menu-item mb-1">
-                                        <a href="#">Track Your Order</a>
-                                    </li>
-                                    <li class="menu-item mb-1">
-                                        <a href="#">Returns Policies</a>
-                                    </li>
-                                    <li class="menu-item mb-1">
-                                        <a href="#">Shipping + Delivery</a>
-                                    </li>
-                                    <li class="menu-item mb-1">
-                                        <a href="#">Contact Us</a>
-                                    </li>
-                                    <li class="menu-item mb-1">
-                                        <a href="#">Faqs</a>
-                                    </li>
-                                </ul>
-                            </div>
+
                         </div>
                         <div class="col-lg-3 col-sm-6 pb-3">
                             <div class="footer-menu contact-item">
-                                <h5 class="widget-title text-capitalize pb-2">Contact Us</h5>
-                                <p>Do you have any queries or suggestions? <a href="mailto:"
+                                <h5 class="widget-title text-capitalize pb-2">Liên hệ với chung tôi</h5>
+                                <p>Bạn có bất kỳ thắc mắc hay câu hỏi nào? <a href="mailto:"
                                                                               class="text-decoration-underline">booklyinfo@gmail.com</a></p>
-                                <p>If you need support? Just give us a call. <a href="#" class="text-decoration-underline">+84 035 999 9999</a></p>
+                                <p>Nếu bạn cần hỗ trợ hãy gọi cho chúng tôi. <a href="#" class="text-decoration-underline">+84 035 999 9999</a></p>
                             </div>
                         </div>
                     </div>
@@ -116,14 +91,14 @@
             <div class="d-flex flex-wrap justify-content-between">
                 <div class="ship-and-payment d-flex gap-md-5 flex-wrap">
                     <div class="shipping d-flex">
-                        <p>We ship with:</p>
+                        <p>Chúng tôi giao hàng với các hãng:</p>
                         <div class="card-wrap ps-2">
                             <img th:src="@{/images/dhl.png}" alt="visa">
                             <img th:src="@{/images/shippingcard.png}" alt="mastercard">
                         </div>
                     </div>
                     <div class="payment-method d-flex">
-                        <p>Payment options:</p>
+                        <p>Lựa chọn thanh toán:</p>
                         <div class="card-wrap ps-2">
                             <img th:src="@{/images/visa.jpg}" alt="visa">
                             <img th:src="@{/images/mastercard.jpg}" alt="mastercard">
